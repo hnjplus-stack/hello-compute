@@ -1,0 +1,33 @@
+const photoInput = document.getElementById("photoInput");
+const musicInput = document.getElementById("musicInput");
+const generateBtn = document.getElementById("generateBtn");
+const videoPlayer = document.getElementById("videoPlayer");
+
+generateBtn.addEventListener("click", async () => {
+    const photoFile = photoInput.files[0];
+    const musicFile = musicInput.files[0];
+    if (!photoFile || !musicFile) {
+        alert("Please select both photo and music!");
+        return;
+    }
+
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    const photoBase64 = await toBase64(photoFile);
+    const musicBase64 = await toBase64(musicFile);
+
+    // AI API 호출 (테스트용 URL, 실제 AI API 교체)
+    const response = await fetch("YOUR_AI_API_ENDPOINT", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photo: photoBase64, music: musicBase64 })
+    });
+
+    const data = await response.json();
+    videoPlayer.src = data.video_url; // API에서 반환한 영상 URL
+});
